@@ -10,7 +10,7 @@ GAME RULES:
 */
 
 
-var scores, roundScore, activePlayer, gamePlaying, playerNames
+var scores, roundScore, activePlayer, gamePlaying, playerNames, previousDice
 init()
 
 document.querySelector('.btn-roll').addEventListener('click', function(){
@@ -19,18 +19,31 @@ document.querySelector('.btn-roll').addEventListener('click', function(){
         var diceDOM = document.querySelector('.dice')
         diceDOM.style.display = 'block';
         diceDOM.src = 'dice-'+dice+'.png'
-        if(dice !== 1){
+        if(dice === 6 && previousDice === 6){
+            scores[activePlayer] = 0
+            ocument.querySelector('#score-'+activePlayer).textContent = scores[activePlayer]
+            nextPlayer()
+        }else if(dice !== 1){
             roundScore +=dice;
             document.querySelector('#current-'+activePlayer).textContent = roundScore
         } else {
             scores[activePlayer]+=roundScore
             document.querySelector('#score-'+activePlayer).textContent = scores[activePlayer]
-            if(scores[activePlayer] >= 20){
+            var input = document.querySelector('.final-score').value;
+            var winningScore
+            if(input){
+                winningScore = input
+            } else {
+                winningScore = 100;
+            }
+            if(scores[activePlayer] >= winningScore){
                 winner()
                 gamePlaying = false
             } else {
                 nextPlayer()
             }
+            
+            previousDice = dice
         }
     }
 });
@@ -40,7 +53,6 @@ document.querySelector('.btn-hold').addEventListener('click', function(){
     if(gamePlaying){
         scores[activePlayer]+=roundScore
         document.querySelector('#score-'+activePlayer).textContent = scores[activePlayer]
-        
         if(scores[activePlayer] >= 20){
             winner()
             gamePlaying = false
